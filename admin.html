@@ -1,0 +1,32 @@
+here<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل دخول المدير</title>
+</head>
+<body>
+  <h2>تسجيل دخول</h2>
+  
+  <!-- فورم تسجيل الدخول -->
+  <input id="username" placeholder="اسم المستخدم">
+  <input id="password" type="password" placeholder="كلمة المرور">
+  <button onclick="login()">دخول</button>
+
+  <script>
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+
+      // التحقق من البيانات
+      if (user === "alkilani@realestate.com" && pass === "reda5050++") {
+        // حفظ حالة الدخول
+        localStorage.setItem("loggedIn", "true");
+        // تحويل للوحة التحكم
+        window.location.href = "dashboard.html";
+      } else {
+        alert("خطأ بالبيانات");
+      }
+    }
+  </script>
+</body>
+</html>
