@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة التحكم</title>
+</head>
+<body>
+  <h2>لوحة التحكم</h2>
+  
+  <!-- فورم نشر عقار -->
+  <form id="propertyForm">
+    <input id="title" placeholder="عنوان العقار"><br>
+    <input id="price" placeholder="السعر"><br>
+    <textarea id="description" placeholder="وصف العقار"></textarea><br>
+    <button type="button" onclick="addProperty()">نشر العقار</button>
+  </form>
+
+  <script>
+    function addProperty() {
+      const title = document.getElementById("title").value;
+      const price = document.getElementById("price").value;
+      const description = document.getElementById("description").value;
+
+      // هون رح نضيف كود الربط مع Firebase بالخطوة الجاية
+      alert("تم إضافة العقار: " + title + " بسعر " + price);
+    }
+  </script>
+</body>
+</html>
