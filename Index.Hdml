@@ -1,105 +1,980 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>AL-KILANI REAL ESTATE</title>
+<meta charset="UTF-8" />
+<title>الكيلاني للعقارات</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Firebase v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+
+/* خلفية الصفحة الكاملة */
 body {
-    margin: 0;
-    font-family: 'Tahoma', sans-serif;
-    background: #0a0f1a;
-    color: white;
+  margin: 0;
+  font-family: "Cairo", sans-serif;
+  color: #fff;
+  min-height: 100vh;
+  position: relative;
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: 
+    linear-gradient(rgba(10, 15, 26, 0.82), rgba(10, 15, 26, 0.92)),
+    url('https://res.cloudinary.com/ag5ikm6r/image/upload/v1782862102/image_1782862014712_eqwl1k.jpg') 
+    center/cover no-repeat;
+  z-index: -1;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
 header {
-    background: linear-gradient(to right, #0a0f1a, #111a2b);
-    padding: 40px;
-    text-align: center;
-    color: #d4af37;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 15px 0;
+  backdrop-filter: blur(8px);
 }
-header h1 {
-    font-size: 48px;
-    margin: 0;
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-header h2 {
-    font-size: 22px;
-    margin-top: 10px;
-    color: #c9a33a;
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-nav {
-    background: #111827;
-    padding: 15px;
-    text-align: center;
+
+.logo-img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
 }
-nav a {
-    color: #d4af37;
-    margin: 0 20px;
-    text-decoration: none;
-    font-size: 20px;
+
+.logo-text-main {
+  font-size: 22px;
+  font-weight: 800;
+  color: #d4af37;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
 }
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 1px solid #d4af37;
+  background: rgba(0, 0, 0, 0.4);
+  color: #d4af37;
+  cursor: pointer;
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  transition: 0.25s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.btn:hover {
+  background: #d4af37;
+  color: #000;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.btn-danger:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.btn-small {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.btn-whatsapp {
+  border-color: #25d366;
+  color: #25d366;
+}
+
+.btn-whatsapp:hover {
+  background: #25d366;
+  color: #fff;
+}
+
+.btn-call {
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.btn-call:hover {
+  background: #3498db;
+  color: #fff;
+}
+
 .hero {
-    background: url('https://i.imgur.com/8fKQ2xU.jpeg');
-    background-size: cover;
-    background-position: center;
-    height: 420px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  text-align: center;
+  padding: 50px 0;
 }
-.hero h1 {
-    background: rgba(0,0,0,0.6);
-    padding: 20px 40px;
-    border-radius: 10px;
-    color: #d4af37;
-    font-size: 40px;
+
+.hero h2 {
+  color: #d4af37;
+  font-size: 32px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  margin-bottom: 25px;
 }
-.section {
-    padding: 50px;
-    text-align: center;
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 15px;
 }
-.section h2 {
-    color: #d4af37;
-    font-size: 32px;
+
+.card {
+  background: rgba(17, 17, 17, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(8px);
+  transition: 0.3s;
 }
-.footer {
-    background: #0a0f1a;
-    padding: 30px;
-    text-align: center;
-    color: #c9a33a;
-    margin-top: 40px;
+
+.card:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  transform: translateY(-3px);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  max-height: 180px;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: bold;
+  color: #d4af37;
+}
+
+.card-meta {
+  font-size: 13px;
+  color: #ccc;
+  margin-bottom: 3px;
+}
+
+.card-footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.panel {
+  background: rgba(17, 17, 17, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-family: "Cairo", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.field textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  margin-top: 30px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+/* أزرار التواصل الرئيسية */
+.contact-bar {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.contact-icon-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid #d4af37;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.25s;
+  box-shadow: 0 0 8px rgba(212,175,55,0.25);
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+}
+
+.contact-icon-btn:hover {
+  background: #d4af37;
+  box-shadow: 0 0 15px #d4af37;
+  transform: translateY(-2px);
+}
+
+.contact-icon-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: #d4af37;
+  transition: 0.25s;
+}
+
+.contact-icon-btn:hover svg {
+  fill: #000;
+}
+
+/* الأقسام الفرعية */
+.subcats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.subcat-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-size: 13px;
+  color: #ddd;
+  cursor: pointer;
+  transition: 0.2s;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.subcat-chip:hover {
+  background: #d4af37;
+  color: #000;
+}
+
+.subcat-chip.active {
+  background: #d4af37;
+  color: #000;
+}
+
+/* مودال التفاصيل */
+#detailsModal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#detailsContent {
+  background: rgba(17, 17, 17, 0.95);
+  border: 1px solid #d4af37;
+  padding: 20px;
+  width: 85%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+}
+
+#detailsContent img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  max-height: 260px;
+  object-fit: cover;
+}
+
+/* Toast notifications */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #d4af37;
+  color: #000;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: bold;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+/* Music indicator */
+.music-indicator {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(212,175,55,0.2);
+  border: 1px solid #d4af37;
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #d4af37;
+  z-index: 9998;
+  display: none;
+  backdrop-filter: blur(4px);
+}
+
+.music-indicator.active {
+  display: block;
+}
+
+.music-indicator::before {
+  content: "🎵 ";
 }
 </style>
 </head>
 
 <body>
 
+<!-- Audio element for background music -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="https://res.cloudinary.com/ag5ikm6r/video/upload/v1782860736/Mon_amour_-_Music_guitar_256k_czddsf.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Music Indicator -->
+<div id="musicIndicator" class="music-indicator">Mon Amour شغالة</div>
+
 <header>
-    <h1>AL-KILANI REAL ESTATE</h1>
-    <h2>Where Luxury Meets Trust</h2>
+  <div class="container header-inner">
+    <div class="logo-area">
+      <!-- اللوقو من Cloudinary -->
+      <img src="https://res.cloudinary.com/ag5ikm6r/image/upload/f_auto,q_auto/1001062153_szdwon" alt="الكيلاني للعقارات" class="logo-img">
+      <div class="logo-text-main">AL-KILANI REAL ESTATE</div>
+    </div>
+    <div>
+      <button id="loginToggleBtn" class="btn">تسجيل الدخول</button>
+      <button id="logoutBtn" class="btn" style="display:none;">تسجيل الخروج</button>
+    </div>
+  </div>
 </header>
 
-<nav>
-    <a href="#">الرئيسية</a>
-    <a href="#">العقارات</a>
-    <a href="#">من نحن</a>
-    <a href="#">تواصل معنا</a>
-</nav>
+<main class="container">
 
-<div class="hero">
-    <h1>عقارات فاخرة — ثقة تمتد لسنوات</h1>
+  <section class="hero">
+    <h2>مرحباً بك في الكيلاني للعقارات</h2>
+
+    <button class="btn" onclick="showSection('sale')">عقارات للبيع</button>
+    <button class="btn" onclick="showSection('rent')">عقارات للإيجار</button>
+
+    <div class="contact-bar">
+      <a class="contact-icon-btn" href="tel:+963980284744">
+        <svg viewBox="0 0 24 24">
+          <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V21a1 1 0 01-1 1C10.07 22 2 13.93 2 3a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.2 2.2z"/>
+        </svg>
+      </a>
+      <a class="contact-icon-btn" href="https://wa.me/963950509594" target="_blank">
+        <svg viewBox="0 0 32 32">
+          <path d="M16 3C9.4 3 4 8.4 4 15c0 2.6.8 5 2.2 7L4 29l7.3-2.2C13 28 14.5 28 16 28c6.6 0 12-5.4 12-12S22.6 3 16 3zm0 22c-1.3 0-2.6-.3-3.8-.9l-.3-.1-4.3 1.3 1.4-4.2-.2-.3C7.9 19.5 7 17.3 7 15c0-5 4-9 9-9s9 4 9 9-4 10-9 10zm5.2-7.3c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2.1-.3 0-.5-.1-.1-.7-1.7-.9-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.7.3-.2.3-1 1-1 2.5s1 2.9 1.1 3.1c.1.2 2 3.1 4.8 4.3 2.8 1.2 2.8.8 3.3.8.5 0 1.7-.7 1.9-1.3.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="loginPanel" class="panel" style="display:none;">
+    <h3 style="color:#d4af37;">تسجيل الدخول</h3>
+    <div class="field">
+      <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+    </div>
+    <div class="field">
+      <input type="password" id="passwordInput" placeholder="كلمة السر">
+    </div>
+    <button class="btn" onclick="handleLogin()">دخول</button>
+    <div id="loginError" style="color:red; display:none; margin-top:10px;">خطأ في تسجيل الدخول</div>
+  </section>
+
+  <!-- ADD PROPERTY -->
+  <section id="addPanel" class="panel" style="display:none;">
+    <h3 style="color:#d4af37;" id="addPanelTitle">إضافة عقار جديد</h3>
+
+    <input type="hidden" id="editPropertyId" value="">
+
+    <div class="field">
+      <select id="mainType">
+        <option value="sale">عقارات للبيع</option>
+        <option value="rent">عقارات للإيجار</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <select id="subType"></select>
+    </div>
+
+    <div class="field">
+      <input type="text" id="titleInput" placeholder="عنوان العقار">
+    </div>
+
+    <div class="field">
+      <input type="text" id="priceInput" placeholder="السعر (مثال: 160000$)">
+    </div>
+
+    <div class="field">
+      <input type="text" id="locationInput" placeholder="الموقع (مثال: القصور)">
+    </div>
+
+    <div class="field">
+      <label style="color:#d4af37;font-size:14px;margin-bottom:5px;display:block;">رابط صورة العقار:</label>
+      <input type="text" id="imageUrlInput" placeholder="https://example.com/image.jpg (اختياري)">
+    </div>
+
+    <div class="field">
+      <textarea id="descInput" placeholder="الوصف الكامل للعقار (اختياري)"></textarea>
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="handleAddProperty()">نشر العقار</button>
+    <button class="btn" id="cancelEditBtn" style="display:none;margin-right:10px;" onclick="cancelEdit()">إلغاء التعديل</button>
+  </section>
+
+  <!-- SALE -->
+  <section id="sale-section" style="display:none;">
+    <h3 style="color:#d4af37;">عقارات للبيع</h3>
+    <div class="subcats" id="saleSubcats"></div>
+    <div id="saleCards" class="cards"></div>
+  </section>
+
+  <!-- RENT -->
+  <section id="rent-section" style="display:none;">
+    <h3 style="color:#d4af37;">عقارات للإيجار</h3>
+    <div class="subcats" id="rentSubcats"></div>
+    <div id="rentCards" class="cards"></div>
+  </section>
+
+</main>
+
+<!-- مودال التفاصيل -->
+<div id="detailsModal" onclick="if(event.target.id==='detailsModal') closeDetails()">
+  <div id="detailsContent"></div>
 </div>
 
-<div class="section">
-    <h2>خدماتنا</h2>
-    <p>بيع وشراء العقارات — إدارة الأملاك — تقييم عقاري — استشارات استثمارية</p>
-</div>
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
-<div class="section">
-    <h2>تواصل معنا</h2>
-    <p>📞 0950509594 — 📞 0980284744</p>
-    <p>📍 Hama, Syria</p>
-</div>
+<footer>
+  الكيلاني للعقارات – Hama, Syria
+</footer>
 
-<div class="footer">
+<script>
+/* ============================================
+   FIREBASE CONFIG
+   ============================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAV_4sWEuVUvs0lm3lO6JyYOifu7fhO9vI",
+  authDomain: "alkilani-real-estate-e1347.firebaseapp.com",
+  projectId: "alkilani-real-estate-e1347",
+  storageBucket: "alkilani-real-estate-e1347.firebasestorage.app",
+  messagingSenderId: "326338206915",
+  appId: "1:326338206915:web:35058fac44f6c82418d676",
+  measurementId: "G-YLVEYYDDL4"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* ============================================
+   MUSIC - Cloudinary MP3
+   ============================================ */
+let musicStarted = false;
+const musicIndicator = document.getElementById("musicIndicator");
+
+function startMusic() {
+  if (musicStarted) return;
+  musicStarted = true;
+
+  const audio = document.getElementById("bgMusic");
+  audio.volume = 0.3;
+  audio.play().catch(e => {
+    console.log("Audio blocked:", e);
+    musicStarted = false;
+  });
+
+  musicIndicator.classList.add("active");
+  showToast("🎵 Mon Amour شغالة");
+}
+
+document.addEventListener("click", startMusic, { once: true });
+document.addEventListener("scroll", startMusic, { once: true });
+document.addEventListener("touchstart", startMusic, { once: true });
+
+/* ============================================
+   DOM ELEMENTS
+   ============================================ */
+const loginToggleBtn = document.getElementById("loginToggleBtn");
+const logoutBtn      = document.getElementById("logoutBtn");
+const loginPanel     = document.getElementById("loginPanel");
+const addPanel       = document.getElementById("addPanel");
+const loginError     = document.getElementById("loginError");
+
+const emailInput     = document.getElementById("emailInput");
+const passwordInput  = document.getElementById("passwordInput");
+
+const mainType       = document.getElementById("mainType");
+const subType        = document.getElementById("subType");
+
+const saleSection    = document.getElementById("sale-section");
+const rentSection    = document.getElementById("rent-section");
+const saleCards      = document.getElementById("saleCards");
+const rentCards      = document.getElementById("rentCards");
+const saleSubcats    = document.getElementById("saleSubcats");
+const rentSubcats    = document.getElementById("rentSubcats");
+
+const detailsModal   = document.getElementById("detailsModal");
+const detailsContent = document.getElementById("detailsContent");
+
+/* ============================================
+   LOCAL LOGIN
+   ============================================ */
+const ADMIN_EMAIL = "alkilani@real-estate.com";
+const ADMIN_PASS  = "redakilani5050123456++";
+let isLoggedIn = false;
+
+loginToggleBtn.onclick = () => {
+  loginPanel.style.display = loginPanel.style.display === "none" ? "block" : "none";
+};
+
+logoutBtn.onclick = () => {
+  isLoggedIn = false;
+  addPanel.style.display = "none";
+  loginPanel.style.display = "none";
+  loginToggleBtn.style.display = "inline-block";
+  logoutBtn.style.display = "none";
+  cancelEdit();
+  loadProperties();
+};
+
+function handleLogin() {
+  if (emailInput.value === ADMIN_EMAIL && passwordInput.value === ADMIN_PASS) {
+    isLoggedIn = true;
+    loginPanel.style.display = "none";
+    addPanel.style.display = "block";
+    loginToggleBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+    loginError.style.display = "none";
+    showToast("✅ تم تسجيل الدخول بنجاح!");
+    loadProperties();
+  } else {
+    loginError.style.display = "block";
+  }
+}
+
+/* ============================================
+   CATEGORIES
+   ============================================ */
+const saleCats = ["شقق", "أراضي", "مزارع", "محلات تجارية", "دور عربية"];
+const rentCats = ["شقق", "محلات", "مزارع"];
+
+function fillSubTypes() {
+  subType.innerHTML = "";
+  let list = mainType.value === "sale" ? saleCats : rentCats;
+  list.forEach(c => {
+    let opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    subType.appendChild(opt);
+  });
+}
+mainType.onchange = fillSubTypes;
+fillSubTypes();
+
+let currentFilter = null;
+
+function renderSubcats() {
+  saleSubcats.innerHTML = "";
+  rentSubcats.innerHTML = "";
+
+  const allSale = document.createElement("div");
+  allSale.className = "subcat-chip" + (currentFilter === null ? " active" : "");
+  allSale.textContent = "الكل";
+  allSale.onclick = () => { currentFilter = null; renderSubcats(); renderProperties(); };
+  saleSubcats.appendChild(allSale);
+
+  saleCats.forEach(c => {
+    let chip = document.createElement("div");
+    chip.className = "subcat-chip" + (currentFilter === c ? " active" : "");
+    chip.textContent = c;
+    chip.onclick = () => { currentFilter = c; renderSubcats(); renderProperties(); };
+    saleSubcats.appendChild(chip);
+  });
+
+  const allRent = document.createElement("div");
+  allRent.className = "subcat-chip" + (currentFilter === null ? " active" : "");
+  allRent.textContent = "الكل";
+  allRent.onclick = () => { currentFilter = null; renderSubcats(); renderProperties(); };
+  rentSubcats.appendChild(allRent);
+
+  rentCats.forEach(c => {
+    let chip = document.createElement("div");
+    chip.className = "subcat-chip" + (currentFilter === c ? " active" : "");
+    chip.textContent = c;
+    chip.onclick = () => { currentFilter = c; renderSubcats(); renderProperties(); };
+    rentSubcats.appendChild(chip);
+  });
+}
+renderSubcats();
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+function showSection(type) {
+  saleSection.style.display = "none";
+  rentSection.style.display = "none";
+
+  if (type === "sale") {
+    saleSection.style.display = "block";
+  } else {
+    rentSection.style.display = "block";
+  }
+
+  currentFilter = null;
+  renderSubcats();
+  renderProperties();
+}
+
+/* ============================================
+   EDIT MODE
+   ============================================ */
+let isEditing = false;
+let editingId = null;
+
+function editProperty(id) {
+  const p = propertiesList.find(x => x.id === id);
+  if (!p) return;
+
+  isEditing = true;
+  editingId = id;
+
+  document.getElementById("addPanelTitle").textContent = "تعديل العقار";
+  document.getElementById("editPropertyId").value = id;
+  document.getElementById("mainType").value = p.mainType;
+  fillSubTypes();
+  document.getElementById("subType").value = p.subType;
+  document.getElementById("titleInput").value = p.title || "";
+  document.getElementById("priceInput").value = p.price || "";
+  document.getElementById("locationInput").value = p.location || "";
+  document.getElementById("imageUrlInput").value = p.imageUrl || "";
+  document.getElementById("descInput").value = p.desc || "";
+
+  document.getElementById("submitBtn").textContent = "حفظ التعديلات";
+  document.getElementById("cancelEditBtn").style.display = "inline-block";
+
+  addPanel.scrollIntoView({ behavior: "smooth" });
+}
+
+function cancelEdit() {
+  isEditing = false;
+  editingId = null;
+
+  document.getElementById("addPanelTitle").textContent = "إضافة عقار جديد";
+  document.getElementById("editPropertyId").value = "";
+  document.getElementById("mainType").value = "sale";
+  fillSubTypes();
+  document.getElementById("titleInput").value = "";
+  document.getElementById("priceInput").value = "";
+  document.getElementById("locationInput").value = "";
+  document.getElementById("imageUrlInput").value = "";
+  document.getElementById("descInput").value = "";
+
+  document.getElementById("submitBtn").textContent = "نشر العقار";
+  document.getElementById("cancelEditBtn").style.display = "none";
+}
+
+/* ============================================
+   ADD / UPDATE PROPERTY
+   ============================================ */
+async function handleAddProperty() {
+  if (!isLoggedIn) {
+    showToast("❌ يجب تسجيل الدخول أولاً");
+    return;
+  }
+
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+
+  const title = document.getElementById("titleInput").value.trim();
+  const desc = document.getElementById("descInput").value.trim();
+  const price = document.getElementById("priceInput").value.trim();
+  const location = document.getElementById("locationInput").value.trim();
+  const imageUrl = document.getElementById("imageUrlInput").value.trim();
+  const mainTypeVal = document.getElementById("mainType").value;
+  const subTypeVal = document.getElementById("subType").value;
+
+  if (!title || !price || !location) {
+    showToast("❌ الرجاء تعبئة العنوان والسعر والموقع");
+    submitBtn.disabled = false;
+    return;
+  }
+
+  try {
+    const propertyData = {
+      title,
+      desc,
+      price,
+      location,
+      imageUrl: imageUrl || "",
+      mainType: mainTypeVal,
+      subType: subTypeVal,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (isEditing && editingId) {
+      await db.collection("properties").doc(editingId).update(propertyData);
+      showToast("✅ تم تعديل العقار بنجاح!");
+      cancelEdit();
+    } else {
+      propertyData.views = 0;
+      propertyData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection("properties").add(propertyData);
+      showToast("✅ تمت إضافة العقار بنجاح!");
+
+      document.getElementById("titleInput").value = "";
+      document.getElementById("descInput").value = "";
+      document.getElementById("priceInput").value = "";
+      document.getElementById("locationInput").value = "";
+      document.getElementById("imageUrlInput").value = "";
+    }
+
+    loadProperties();
+  } catch (error) {
+    console.error(error);
+    showToast("❌ صار خطأ، جرب مرة ثانية");
+  }
+
+  submitBtn.disabled = false;
+}
+
+/* ============================================
+   DELETE PROPERTY
+   ============================================ */
+async function deleteProperty(id) {
+  if (!isLoggedIn) {
+    showToast("❌ يجب تسجيل الدخول أولاً");
+    return;
+  }
+
+  if (!confirm("هل أنت متأكد من حذف هذا العقار؟")) return;
+
+  try {
+    await db.collection("properties").doc(id).delete();
+    showToast("🗑️ تم حذف العقار");
+    loadProperties();
+  } catch (error) {
+    console.error(error);
+    showToast("❌ صار خطأ أثناء الحذف");
+  }
+}
+
+/* ============================================
+   LOAD & RENDER PROPERTIES
+   ============================================ */
+let propertiesList = [];
+
+async function loadProperties() {
+  try {
+    const snapshot = await db.collection("properties").orderBy("createdAt", "desc").get();
+    propertiesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderProperties();
+  } catch (error) {
+    console.error("Error loading properties:", error);
+  }
+}
+
+function renderProperties() {
+  saleCards.innerHTML = "";
+  rentCards.innerHTML = "";
+
+  let hasSale = false;
+  let hasRent = false;
+
+  propertiesList.forEach(p => {
+    if (currentFilter && p.subType !== currentFilter) return;
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const imgSrc = p.imageUrl && p.imageUrl.trim() !== ""
+      ? p.imageUrl
+      : "https://via.placeholder.com/400x250?text=AL-KILANI";
+
+    let adminButtons = "";
+    if (isLoggedIn) {
+      adminButtons = `
+        <div class="card-actions">
+          <button class="btn btn-small" onclick="editProperty('${p.id}')">✏️ تعديل</button>
+          <button class="btn btn-small btn-danger" onclick="deleteProperty('${p.id}')">🗑️ حذف</button>
+        </div>
+      `;
+    }
+
+    const contactButtons = `
+      <div class="contact-actions">
+        <a href="https://wa.me/963950509594?text=مرحباً، أنا مهتم بهذا العقار: ${encodeURIComponent(p.title || '')}" target="_blank" class="btn btn-small btn-whatsapp">💬 واتساب</a>
+        <a href="tel:+963980284744" class="btn btn-small btn-call">📞 اتصال</a>
+      </div>
+    `;
+
+    card.innerHTML = `
+      <img src="${imgSrc}" alt="صورة العقار" loading="lazy">
+      <div class="card-title">${p.title || "بدون عنوان"}</div>
+      <div class="card-meta">السعر: ${p.price || "غير محدد"}</div>
+      <div class="card-meta">الموقع: ${p.location || "غير محدد"}</div>
+      <div class="card-footer">
+        <span style="font-size:12px;color:#aaa;">المشاهدات: ${p.views || 0}</span>
+        <button class="btn" onclick="showDetails('${p.id}')" style="padding:6px 14px;font-size:12px;">عرض التفاصيل</button>
+      </div>
+      ${contactButtons}
+      ${adminButtons}
+    `;
+
+    if (p.mainType === "sale") {
+      saleCards.appendChild(card);
+      hasSale = true;
+    } else {
+      rentCards.appendChild(card);
+      hasRent = true;
+    }
+  });
+
+  if (!hasSale) saleCards.innerHTML = "<p style='color:#777;text-align:center;padding:20px;'>لا يوجد عقارات للبيع حالياً</p>";
+  if (!hasRent) rentCards.innerHTML = "<p style='color:#777;text-align:center;padding:20px;'>لا يوجد عقارات للإيجار حالياً</p>";
+}
+
+/* ============================================
+   DETAILS MODAL
+   ============================================ */
+async function showDetails(id) {
+  const p = propertiesList.find(x => x.id === id);
+  if (!p) return;
+
+  const currentViews = p.views || 0;
+  await db.collection("properties").doc(id).update({ views: currentViews + 1 });
+  p.views = currentViews + 1;
+  renderProperties();
+
+  const imgSrc = p.imageUrl && p.imageUrl.trim() !== ""
+    ? p.imageUrl
+    : "https://via.placeholder.com/600x350?text=AL-KILANI";
+
+  detailsContent.innerHTML = `
+    <img src="${imgSrc}" alt="صورة العقار">
+    <h3 style="color:#d4af37;margin:0 0 10px;">${p.title || "بدون عنوان"}</h3>
+    <p><strong>القسم:</strong> ${p.subType || "غير محدد"}</p>
+    <p><strong>السعر:</strong> ${p.price || "غير محدد"}</p>
+    <p><strong>الموقع:</strong> ${p.location || "غير محدد"}</p>
+    <p><strong>المشاهدات:</strong> ${p.views}</p>
+    <p style="margin-top:10px;"><strong>الوصف:</strong></p>
+    <p>${p.desc || "لا يوجد وصف"}</p>
+    <div class="contact-actions" style="margin-top:15px;">
+      <a href="https://wa.me/963950509594?text=مرحباً، أنا مهتم بهذا العقار: ${encodeURIComponent(p.title || '')}" target="_blank" class="btn btn-whatsapp">💬 واتساب</a>
+      <a href="tel:+963980284744" class="btn btn-call">📞 اتصال</a>
+    </div>
+    <button class="btn" style="margin-top:15px;" onclick="closeDetails()">إغلاق</button>
+  `;
+
+  detailsModal.style.display = "flex";
+}
+
+function closeDetails() {
+  detailsModal.style.display = "none";
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
+/* ============================================
+   INIT
+   ============================================ */
+window.addEventListener("load", () => {
+  loadProperties();
+});
+</script>
+
+</body>
+</html>
     © 2026 AL-KILANI REAL ESTATE — All Rights Reserved
 </div>
 
